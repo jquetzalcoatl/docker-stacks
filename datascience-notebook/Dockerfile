@@ -29,7 +29,8 @@ RUN apt-get update --yes && \
 # install Julia packages in /opt/julia instead of ${HOME}
 ENV JULIA_DEPOT_PATH=/opt/julia \
     JULIA_PKGDIR=/opt/julia \
-    JULIA_VERSION="${julia_version}"
+    JULIA_VERSION="${julia_version}" \
+    JULIA_CUDA_USE_BINARYBUILDER=false
 
 WORKDIR /tmp
 
@@ -102,6 +103,27 @@ RUN set -x && \
 # taking effect properly on the .local folder in the jovyan home dir.
 RUN julia -e 'import Pkg; Pkg.update()' && \
     julia -e 'import Pkg; Pkg.add("HDF5")' && \
+    julia -e 'import Pkg; Pkg.add("Plots")' && \
+    julia -e 'import Pkg; Pkg.add("DelimitedFiles")' && \
+    julia -e 'import Pkg; Pkg.add("Statistics")' && \
+    julia -e 'import Pkg; Pkg.add("CSV")' && \
+    julia -e 'import Pkg; Pkg.add("DataFrames")' && \
+    julia -e 'import Pkg; Pkg.add("Interact")' && \
+    julia -e 'import Pkg; Pkg.add("JSON")' && \
+    julia -e 'import Pkg; Pkg.add("Atom")' && \
+    julia -e 'import Pkg; Pkg.add("Juno")' && \
+    julia -e 'import Pkg; Pkg.add("Flux")' && \
+    julia -e 'import Pkg; Pkg.add("BSON")' && \
+    julia -e 'import Pkg; Pkg.add("StatsBase")' && \
+    julia -e 'import Pkg; Pkg.add("DiffEqFlux")' && \
+    julia -e 'import Pkg; Pkg.add("DiffEqSensitivity")' && \
+    julia -e 'import Pkg; Pkg.add("ArgParse")' && \
+    julia -e 'import Pkg; Pkg.add("Dates")' && \
+    julia -e 'import Pkg; Pkg.add("OrdinaryDiffEq")' && \
+    julia -e 'import Pkg; Pkg.add(name="CUDA", rev="master")' && \
+    julia -e 'import Pkg; Pkg.add("DifferentialEquations")' && \
+    julia -e 'import Pkg; Pkg.add("LinearAlgebra")' && \
+    julia -e 'import Pkg; Pkg.add("Images")' && \
     julia -e 'using Pkg; pkg"add IJulia"; pkg"precompile"' && \
     # move kernelspec out of home \
     mv "${HOME}/.local/share/jupyter/kernels/julia"* "${CONDA_DIR}/share/jupyter/kernels/" && \
@@ -109,4 +131,6 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
     rm -rf "${HOME}/.local" && \
     fix-permissions "${JULIA_PKGDIR}" "${CONDA_DIR}/share/jupyter"
 
+RUN conda install cuda -c nvidia
+#RUN apt-get install git-lfs
 WORKDIR "${HOME}"
