@@ -132,13 +132,16 @@ dev/%: PORT?=8888
 dev/%: ## run a foreground container for a stack
 	docker run -it --rm -p $(PORT):8888 $(DARGS) $(OWNER)/$(notdir $@)
 
-dev-env: ## install libraries required to build docs and run tests
+install-dev-env: ## install libraries required to build images and run tests
 	@pip install -r requirements-dev.txt
 
 
 
 docs: ## build HTML documentation
 	sphinx-build docs/ docs/_build/
+
+install-docs-env: ## install libraries required to build docs
+	@pip install -r requirements-docs.txt
 
 
 
@@ -191,11 +194,11 @@ push-all-multi: $(foreach I, $(MULTI_IMAGES), push-multi/$(I)) $(foreach I, $(AM
 
 
 
-run/%: ## run a bash in interactive mode in a stack
+run-shell/%: ## run a bash in interactive mode in a stack
 	docker run -it --rm $(OWNER)/$(notdir $@) $(SHELL)
 
-run-sudo/%: ## run a bash in interactive mode as root in a stack
-	docker run -it --rm -u root $(OWNER)/$(notdir $@) $(SHELL)
+run-sudo-shell/%: ## run a bash in interactive mode as root in a stack
+	docker run -it --rm --user root $(OWNER)/$(notdir $@) $(SHELL)
 
 
 
