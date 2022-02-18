@@ -138,7 +138,10 @@ install-dev-env: ## install libraries required to build images and run tests
 
 
 docs: ## build HTML documentation
-	sphinx-build docs/ docs/_build/
+	sphinx-build -W --keep-going --color docs/ docs/_build/
+
+linkcheck-docs: ## check broken links
+	sphinx-build -W --keep-going --color -b linkcheck docs/ docs/_build/
 
 install-docs-env: ## install libraries required to build docs
 	@pip install -r requirements-docs.txt
@@ -204,7 +207,7 @@ run-sudo-shell/%: ## run a bash in interactive mode as root in a stack
 
 test/%: ## run tests against a stack (only common tests or common tests + specific tests)
 	@echo "::group::test/$(OWNER)/$(notdir $@)"
-	@if [ ! -d "$(notdir $@)/test" ]; then TEST_IMAGE="$(OWNER)/$(notdir $@)" pytest -m "not info" test; \
-	else TEST_IMAGE="$(OWNER)/$(notdir $@)" pytest -m "not info" test $(notdir $@)/test; fi
+	@if [ ! -d "$(notdir $@)/test" ]; then TEST_IMAGE="$(OWNER)/$(notdir $@)" pytest --numprocesses=auto -m "not info" test; \
+	else TEST_IMAGE="$(OWNER)/$(notdir $@)" pytest --numprocesses=auto -m "not info" test $(notdir $@)/test; fi
 	@echo "::endgroup::"
 test-all: $(foreach I, $(ALL_IMAGES), test/$(I)) ## test all stacks
