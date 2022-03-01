@@ -18,10 +18,8 @@ on:
       - "tensorflow-notebook/**"
 
       - "tagging/**"
-      - "test/**"
-      - "conftest.py"
+      - "tests/**"
       - "Makefile"
-      - "pytest.ini"
       - "requirements-dev.txt"
   push:
     branches:
@@ -40,16 +38,20 @@ on:
       - "tensorflow-notebook/**"
 
       - "tagging/**"
-      - "test/**"
-      - "conftest.py"
+      - "tests/**"
       - "Makefile"
-      - "pytest.ini"
       - "requirements-dev.txt"
   workflow_dispatch:
+
+concurrency:
+  # only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-test-publish-images:
     name: Build, test, and publish Docker Images
+    if: github.event_name != 'schedule' || (github.event_name == 'schedule' && github.repository == 'jupyter/docker-stacks')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -76,7 +78,7 @@ jobs:
           path: main
 
       - name: Set Up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.x
 
@@ -113,7 +115,7 @@ jobs:
 
       - name: Login to Docker Hub
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
-        uses: docker/login-action@6af3c118c8376c675363897acf1757f7a9be6583 # dependabot updates to latest release
+        uses: docker/login-action@bb984efc561711aaa26e433c32c3521176eae55b # dependabot updates to latest release
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
