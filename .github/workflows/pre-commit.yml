@@ -8,6 +8,9 @@ on:
       - master
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   run-hooks:
     name: Run pre-commit hooks
@@ -15,7 +18,7 @@ jobs:
 
     steps:
       - name: Clone Main Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: main
 

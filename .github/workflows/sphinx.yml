@@ -9,6 +9,7 @@ on:
       - ".github/workflows/sphinx.yml"
 
       - "docs/**"
+      - "README.md"
       - ".readthedocs.yaml"
       - "requirements-docs.txt"
   push:
@@ -19,6 +20,7 @@ on:
       - ".github/workflows/sphinx.yml"
 
       - "docs/**"
+      - "README.md"
       - ".readthedocs.yaml"
       - "requirements-docs.txt"
   workflow_dispatch:
@@ -33,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set Up Python
         uses: actions/setup-python@v3
